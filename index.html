@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOCUS+ | Planeje. Priorize. Realize.</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root{
+    --bg:#080b14;
+    --bg-elevated:#0d1120;
+    --card:#10142380;
+    --card-solid:#10142a;
+    --border:rgba(255,255,255,0.08);
+    --border-soft:rgba(255,255,255,0.06);
+    --text:#f4f6fb;
+    --text-dim:#8c93a8;
+    --text-dimmer:#666e85;
+    --blue:#2f6bff;
+    --blue-light:#5b8dff;
+    --purple:#7c4dff;
+    --purple-light:#a685ff;
+    --icon-blue-bg:#1a3ad9;
+    --icon-purple-bg:#7c3aed;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --maxw:1400px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 12% 10%, rgba(47,107,255,0.10), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 88% 15%, rgba(124,77,255,0.10), transparent 60%);
+    color:var(--text);
+    font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+  img{max-width:100%;display:block;}
+  .icon-svg{width:20px;height:20px;stroke-width:2;flex-shrink:0;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 40px;}
+
+  header.nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(8,11,20,0.85);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .nav-inner{
+    max-width:var(--maxw);margin:0 auto;padding:16px 40px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-icon{
+    width:44px;height:44px;border-radius:12px;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 20px rgba(47,107,255,0.4);
+  }
+  .brand-icon svg{width:24px;height:24px;stroke:#fff;stroke-width:2.5;}
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+  .brand-text .name{font-size:20px;font-weight:800;letter-spacing:0.5px;}
+  .brand-text .name .plus{color:var(--blue-light);}
+  .brand-text .tag{font-size:10px;letter-spacing:1.5px;color:var(--text-dimmer);font-weight:600;}
+
+  .nav-links{display:flex;align-items:center;gap:36px;}
+  .nav-links a{
+    font-size:14.5px;font-weight:500;color:var(--text-dim);
+    padding-bottom:6px;border-bottom:2px solid transparent;
+    transition:color .2s ease, border-color .2s ease;
+  }
+  .nav-links a:hover{color:var(--text);}
+  .nav-links a.active{color:var(--blue-light);border-color:var(--blue-light);}
+
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .theme-toggle{
+    display:flex;align-items:center;gap:2px;
+    background:var(--bg-elevated);border:1px solid var(--border);
+    border-radius:20px;padding:4px;
+  }
+  .theme-toggle button{
+    width:30px;height:30px;border-radius:50%;border:none;background:transparent;
+    display:flex;align-items:center;justify-content:center;color:var(--text-dim);
+  }
+  .theme-toggle button.active{background:var(--card-solid);color:var(--text);}
+  .theme-toggle svg{width:16px;height:16px;stroke-width:2;}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 22px;border-radius:10px;border:none;
+    font-size:14.5px;font-weight:600;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--blue),#4f5bff);
+    color:#fff;box-shadow:0 6px 20px rgba(47,107,255,0.35);
+  }
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-secondary{
+    background:var(--bg-elevated);color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn-secondary:hover{background:#161b30;}
+  .btn svg{width:16px;height:16px;stroke-width:2.4;}
+
+  
+  .hero{padding:70px 0 40px;}
+  .hero-grid{
+    display:grid;grid-template-columns:1fr 1.15fr;gap:56px;align-items:center;
+  }
+  .hero h1{
+    font-size:56px;font-weight:800;line-height:1.08;letter-spacing:-1px;
+  }
+  .hero h1 .l2{
+    background:linear-gradient(90deg,var(--blue-light),#6d7bff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero h1 .l3{
+    background:linear-gradient(90deg,#8f7bff,var(--purple-light));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{
+    margin-top:22px;font-size:16.5px;color:var(--text-dim);max-width:440px;line-height:1.65;
+  }
+  .hero-actions{display:flex;gap:14px;margin-top:32px;}
+  .hero-actions .btn{padding:14px 26px;font-size:15px;}
+
+  .hero-image{
+    position:relative;border-radius:var(--radius-lg);overflow:hidden;
+    border:1px solid var(--border);
+    box-shadow:0 30px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
+    aspect-ratio:16/11.3;
+  }
+  .hero-image img{width:100%;height:100%;object-fit:cover;}
+
+  /* ---------- STAT STRIP ---------- */
+  .stat-strip{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px;
+  }
+  .stat-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:22px 24px;
+    display:flex;gap:16px;align-items:flex-start;
+  }
+
+ .stat-code{    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius-md);padding:22px 24px;
+    display:flex;gap:16px;align-items:center;
+  
+    width: 100%;
+     justify-items: center;
+    }
+
+  .stat-code .stat-icon, .stat-card .stat-icon{
+    width:42px;height:42px;border-radius:10px;flex-shrink:0;
+    background:var(--icon-purple-bg);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .stat-card:first-child .stat-icon{background:var(--icon-blue-bg);}
+  .stat-card .stat-icon svg{width:20px;height:20px;stroke:#fff;stroke-width:2.2;}
+  .stat-code h4, .stat-card h4{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:6px;}
+  .stat-code p, .stat-card p{font-size:13.5px;color:var(--text-dim);line-height:1.5;}
+
+  .content{
+    display:grid;grid-template-columns:1.7fr 1fr;gap:24px;margin-top:56px;
+  }
+
+  .panel{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:32px;
+  }
+  .panel-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:28px;}
+  .panel-head .head-icon{
+    width:48px;height:48px;border-radius:12px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--blue),#5c6bff);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .panel-head.purple .head-icon{background:linear-gradient(135deg,var(--purple),#9b6bff);}
+  .panel-head .head-icon svg{width:22px;height:22px;stroke:#fff;stroke-width:2.2;}
+  .panel-head h2{font-size:22px;font-weight:800;margin-bottom:4px;}
+  .panel-head p{font-size:13.5px;color:var(--text-dim);}
+
+  .feature-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:22px 28px;
+  }
+  .feature-item{display:flex;gap:14px;align-items:flex-start;}
+  .feature-item .f-icon{
+    width:38px;height:38px;border-radius:9px;flex-shrink:0;
+    background:var(--bg-elevated);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .feature-item .f-icon svg{width:17px;height:17px;stroke:var(--blue-light);stroke-width:2.1;}
+  .feature-item .f-label{font-size:11px;font-weight:700;color:var(--blue-light);letter-spacing:0.4px;margin-bottom:3px;}
+  .feature-item .f-title{font-size:13.5px;color:#dfe3ee;line-height:1.4;}
+
+  /* sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:24px;}
+
+  .audience-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+  .audience-card{
+    border-radius:var(--radius-md);padding:22px;color:#fff;
+    display:flex;flex-direction:column;gap:14px;
+  }
+  .audience-card.blue{background:linear-gradient(155deg,#2f6bff,#1a48d6);}
+  .audience-card.purple{background:linear-gradient(155deg,#8a5cf6,#6c3ce0);}
+  .audience-card .a-icon{
+    width:40px;height:40px;border-radius:10px;
+    background:rgba(255,255,255,0.18);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .audience-card .a-icon svg{width:20px;height:20px;stroke:#fff;stroke-width:2.1;}
+  .audience-card h4{font-size:16px;font-weight:800;}
+  .audience-card p{font-size:12.5px;line-height:1.55;opacity:0.92;}
+
+  .results-panel .results-head{margin-bottom:26px;}
+  .results-panel .results-head h2{font-size:19px;font-weight:800;margin-bottom:6px;}
+  .results-panel .results-head p{font-size:13px;color:var(--text-dim);}
+  .results-steps{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    position:relative;
+  }
+  .results-steps::before{
+    content:"";position:absolute;top:26px;left:12.5%;right:12.5%;height:1px;
+    background-image:linear-gradient(90deg, var(--border) 50%, transparent 50%);
+    background-size:10px 1px;
+  }
+  .step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;position:relative;z-index:1;}
+  .step .s-icon{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--bg-elevated);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step .s-icon svg{width:22px;height:22px;stroke:var(--blue-light);stroke-width:2;}
+  .step span{font-size:12.5px;color:var(--text-dim);font-weight:600;line-height:1.4;}
+
+
+  footer.spacer{height:70px;}
+
+
+  @media (max-width:1080px){
+    .content{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
+  @media (max-width:760px){
+    .wrap,.nav-inner{padding-left:20px;padding-right:20px;}
+    .hero-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:38px;}
+    .stat-strip{grid-template-columns:1fr;}
+    .feature-grid{grid-template-columns:1fr;}
+    .audience-grid{grid-template-columns:1fr;}
+    .results-steps{grid-template-columns:1fr 1fr;row-gap:26px;}
+    .results-steps::before{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-icon"><i data-lucide="check-circle-2"></i></div>
+      <div class="brand-text">
+        <span class="name">NHA<span class="plus">+</span></span>
+        <span class="tag">NÃO. HAVERÁ. AMANHÃ.</span>
+      </div>
+    </div>
+
+   
+
+    <div class="nav-right">
+      
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" id="visao">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1>NÃO.<br><span class="l2">HAVERÁ.</span><br><span class="l3">AMANHÃ.</span></h1>
+        <p>A ferramenta inteligente para organizar suas atividades, vencer a procrastinação e alcançar seus objetivos.</p>
+        <div class="hero-actions">
+            <a href="https://www.sciencedirect.com/science/article/abs/pii/S0191886915001610?">
+          <button class="btn btn-primary"><i data-lucide="play"></i> Artigo 1</button>
+          </a>
+          <a href="https://pubmed.ncbi.nlm.nih.gov/30406682/">
+  <button class="btn btn-secondary"><i data-lucide="play"></i> Artigo 2</button>
+       </a>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=1200&q=80&auto=format&fit=crop" alt="Pessoa estudando em uma mesa com dois monitores em ambiente com iluminação roxa e azul">
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="users"></i></div>
+        <div>
+          <h4>Até 80–95% dos universitários procrastinam atividades acadêmicas.</h4>
+          <p>Uma revisão/meta-análise sobre procrastinação e desempenho acadêmico cita estimativas de que 80–95% dos estudantes universitários se 
+            envolvem em procrastinação, e que pelo menos metade dos estudantes procrastina. </p>
+           
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="trending-up"></i></div>
+        <div>
+          <h4>Estudos comprovam: procrastinar hoje significa pior desempenho amanhã.</h4>
+          <p> Um estudo prospectivo com 258 universitários descobriu que a procrastinação acadêmica predisse negativamente o desempenho acadêmico posterior, 
+            mesmo depois de considerar desempenho anterior e capacidade de memória de trabalho. </p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <div class="stat-code">
+        <div class="stat-icon"><i data-lucide="file-code"></i></div>
+        <div>
+          <h4>NÃO HÁ AMANHÃ</h4>
+          <p> O projeto propõe uma ferramenta destinada a combater a procrastinação e melhorar a organização das atividades do usuário, permitindo visualizar de forma clara tudo o que precisa ser realizado, identificar quais tarefas são mais urgentes ou importantes e estabelecer uma ordem de execução. 
+            A ferramenta busca evitar que atividades sejam constantemente adiadas até se acumularem, ajudando o usuário a transformar suas responsabilidades em ações concretas e acompanháveis.</p>
+        </div>
+      </div>
+    </div>
+
+  <section class="content" id="funcionalidades">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="head-icon"><i data-lucide="star"></i></div>
+        <div>
+          <h2>Principais Funcionalidades</h2>
+          <p>Tudo que você precisa para se organizar e produzir mais.</p>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="clipboard-list"></i></div>
+          <div><div class="f-label">RF01</div><div class="f-title">Cadastrar atividades ou disciplinas</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="columns-3"></i></div>
+          <div><div class="f-label">RF07</div><div class="f-title">Consultar atividades pendentes e concluídas</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="layers"></i></div>
+          <div><div class="f-label">RF02</div><div class="f-title">Cadastrar subatividades (trabalhos, exercícios, projetos, etc.)</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="bell"></i></div>
+          <div><div class="f-label">RF08</div><div class="f-title">Alertas de atividades próximas do prazo</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="clock"></i></div>
+          <div><div class="f-label">RF03</div><div class="f-title">Informar prazo, dificuldade, importância e tempo estimado</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="pie-chart"></i></div>
+          <div><div class="f-label">RF09</div><div class="f-title">Resumo da situação acadêmica ou progresso geral</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="calculator"></i></div>
+          <div><div class="f-label">RF04</div><div class="f-title">Calcular a prioridade automaticamente</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="trophy"></i></div>
+          <div><div class="f-label">RF10</div><div class="f-title">Sistema de recompensas e satisfação por conquistas</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="flag"></i></div>
+          <div><div class="f-label">RF05</div><div class="f-title">Atividades organizadas por nível de prioridade</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="shield"></i></div>
+          <div><div class="f-label">RF11</div><div class="f-title">Bloquear aplicativos que atrapalham seu foco</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="f-icon"><i data-lucide="check-square"></i></div>
+          <div><div class="f-label">RF06</div><div class="f-title">Marcar atividades como concluídas</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel" id="publico">
+        <div class="panel-head purple">
+          <div class="head-icon"><i data-lucide="users-round"></i></div>
+          <div>
+            <h2 style="font-size:19px;">Para quem é?</h2>
+            <p>Perfeito para estudantes, profissionais e qualquer pessoa que deseja ter mais controle sobre suas tarefas.</p>
+          </div>
+        </div>
+
+        <div class="audience-grid">
+          <div class="audience-card blue">
+            <div class="a-icon"><i data-lucide="graduation-cap"></i></div>
+            <h4>Estudantes</h4>
+            <p>Organize disciplinas, trabalhos, provas e estudos de forma inteligente.</p>
+          </div>
+          <div class="audience-card purple">
+            <div class="a-icon"><i data-lucide="briefcase"></i></div>
+            <h4>Uso Geral</h4>
+            <p>Gerencie tarefas pessoais, profissionais e projetos com eficiência e foco.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel results-panel" id="como-funciona">
+        <div class="results-head">
+          <h2>Mais foco, mais resultados</h2>
+          <p>Transforme sua rotina e alcance seu máximo potencial.</p>
+        </div>
+        <div class="results-steps">
+          <div class="step"><div class="s-icon"><i data-lucide="target"></i></div><span>Defina Prioridades</span></div>
+          <div class="step"><div class="s-icon"><i data-lucide="calendar"></i></div><span>Planeje Melhor</span></div>
+          <div class="step"><div class="s-icon"><i data-lucide="rocket"></i></div><span>Execute com Foco</span></div>
+          <div class="step"><div class="s-icon"><i data-lucide="trophy"></i></div><span>Alcance seus Objetivos</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="spacer" id="beneficios"></footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
