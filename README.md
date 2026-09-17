@@ -9,10 +9,9 @@
 # N.H.A
 
 
-O projeto consiste no desenvolvimento de um aplicativo de produtividade e organização pessoal, criado para ajudar o usuário a 
+O projeto consiste no desenvolvimento de um **aplicativo de produtividade e organização pessoal**, criado para ajudar o usuário a 
 organizar seus objetivos, tarefas e atividades, acompanhar seu desenvolvimento e compreender melhor sua própria produtividade.
 
- .
 
 **Release 1**
 
