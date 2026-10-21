@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {{ objetivo.titulo }}
+    </title>
+</head>
+
+<body>
+
+    <a href="{% url 'inicio' %}">
+        ← Voltar
+    </a>
+
+    <h1>
+        {{ objetivo.titulo }}
+    </h1>
+
+    <p>
+        Área: {{ objetivo.area }}
+    </p>
+
+    <p>
+        {{ objetivo.descricao }}
+    </p>
+
+    <a href="{% url 'editar_objetivo' objetivo_id=objetivo.id %}">
+        Editar objetivo
+    </a>
+
+    <form
+        method="POST"
+        action="{% url 'excluir_objetivo' objetivo_id=objetivo.id %}"
+    >
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Excluir objetivo
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Marcos</h2>
+
+    <a href="{% url 'criar_marco' objetivo_id=objetivo.id %}">
+        + Criar marco
+    </a>
+
+    {% for marco in marcos %}
+
+        <article>
+
+            <h3>
+                {{ marco.titulo }}
+            </h3>
+
+            <p>
+                {{ marco.descricao }}
+            </p>
+
+        </article>
+
+    {% empty %}
+
+        <p>
+            Nenhum marco criado.
+        </p>
+
+    {% endfor %}
+
+    <hr>
+
+    <h2>Tarefas</h2>
+
+    <a href="{% url 'criar_tarefa' objetivo_id=objetivo.id %}">
+        + Criar tarefa
+    </a>
+
+    {% for tarefa in tarefas %}
+
+        <article>
+
+            {% if tarefa.concluida %}
+
+                <del>
+                    {{ tarefa.titulo }}
+                </del>
+
+                <strong>
+                    ✓ Concluída
+                </strong>
+
+            {% else %}
+
+                <strong>
+                    {{ tarefa.titulo }}
+                </strong>
+
+            {% endif %}
+
+            <p>
+                {{ tarefa.descricao }}
+            </p>
+
+            <form
+                method="POST"
+                action="{% url 'concluir_tarefa' tarefa_id=tarefa.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button type="submit">
+                    {% if tarefa.concluida %}
+                        Desmarcar
+                    {% else %}
+                        Concluir
+                    {% endif %}
+                </button>
+
+            </form>
+
+            <form
+                method="POST"
+                action="{% url 'excluir_tarefa' tarefa_id=tarefa.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button type="submit">
+                    Excluir
+                </button>
+
+            </form>
+
+        </article>
+
+        <hr>
+
+    {% empty %}
+
+        <p>
+            Nenhuma tarefa criada.
+        </p>
+
+    {% endfor %}
+
+</body>
+
+</html>

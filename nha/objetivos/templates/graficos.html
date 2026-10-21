@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Progresso</title>
+</head>
+
+<body>
+
+    <h1>Progresso por área</h1>
+
+    {% for area, pontos in pontuacao.items %}
+
+        <p>
+            <strong>
+                {{ area }}
+            </strong>
+
+            :
+
+            {{ pontos }}
+            pontos
+        </p>
+
+    {% endfor %}
+
+    <a href="{% url 'inicio' %}">
+        Voltar
+    </a>
+
+</body>
+
+</html>

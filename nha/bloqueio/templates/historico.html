@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de bloqueios</title>
+</head>
+<body>
+
+    <h1>Histórico de bloqueios</h1>
+
+    <a href="{% url 'bloqueio' %}">Voltar</a>
+
+    <hr>
+
+    {% for evento in eventos %}
+        <h3>{{ evento.aplicativo }}</h3>
+
+        <p><strong>Ação:</strong> {{ evento.acao }}</p>
+
+        <p>
+            <strong>Data e hora:</strong>
+            {{ evento.data_hora|date:"d/m/Y H:i:s" }}
+        </p>
+
+        <hr>
+    {% empty %}
+        <p>Nenhum evento registrado ainda.</p>
+    {% endfor %}
+
+</body>
+</html>

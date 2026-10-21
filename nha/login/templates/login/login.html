@@ -1,0 +1,39 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+ <link rel="stylesheet" href="{%  static 'style.css' %}">
+</head>
+
+<body>
+
+    <h1>Login</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">Entrar</button>
+    </form>
+    <label>
+        <input class="box" type="checkbox">
+    </label>
+
+    <script>
+    const box = querySelector('.box')
+    </script>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+  
+ <a href="{% url 'editlogin' %}">esqueci a senha</a>
+ <a href="/cadastro">Não tem uma conta? Cadastre-se</a>
+
+</body>
+</html>

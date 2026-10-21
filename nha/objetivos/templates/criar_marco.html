@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Novo marco</title>
+</head>
+
+<body>
+
+    <h1>Novo marco</h1>
+
+    <h2>
+        Objetivo: {{ objetivo.titulo }}
+    </h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Criar marco
+        </button>
+
+    </form>
+
+    <a href="{% url 'objetivo' objetivo_id=objetivo.id %}">
+        Voltar
+    </a>
+
+</body>
+
+</html>

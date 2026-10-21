@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nova tarefa</title>
+</head>
+
+<body>
+
+    <h1>Nova tarefa</h1>
+
+    <h2>
+        Objetivo: {{ objetivo.titulo }}
+    </h2>
+
+    {% if form.non_field_errors %}
+
+        {{ form.non_field_errors }}
+
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <label for="marco_id">
+            Marco:
+        </label>
+
+        <select
+            name="marco_id"
+            id="marco_id"
+        >
+
+            <option value="">
+                Sem marco
+            </option>
+
+            {% for marco in marcos %}
+
+                <option value="{{ marco.id }}">
+                    {{ marco.titulo }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Criar tarefa
+        </button>
+
+    </form>
+
+    <a href="{% url 'objetivo' objetivo_id=objetivo.id %}">
+        Voltar
+    </a>
+
+</body>
+
+</html>

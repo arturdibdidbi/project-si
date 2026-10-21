@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Meus objetivos</title>
+</head>
+
+<body>
+
+    <h1>Meus objetivos</h1>
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <p>
+                {{ message }}
+            </p>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <a href="{% url 'criar_objetivo' %}">
+        Criar objetivo
+    </a>
+
+    <a href="{% url 'graficos' %}">
+        Gráficos
+    </a>
+
+    <a href="{% url 'bloqueio' %}">
+        Bloqueio de aplicações
+    </a>
+
+    <hr>
+
+    {% for objetivo in objetivos %}
+
+        <article>
+
+            <h2>
+                {{ objetivo.titulo }}
+            </h2>
+
+            <p>
+                Área: {{ objetivo.area }}
+            </p>
+
+            <p>
+                {{ objetivo.descricao }}
+            </p>
+
+            <a href="{% url 'objetivo' objetivo_id=objetivo.id %}">
+                Abrir
+            </a>
+
+        </article>
+
+        <hr>
+
+    {% empty %}
+
+        <p>
+            Você ainda não possui objetivos.
+        </p>
+
+    {% endfor %}
+
+    <form
+        method="POST"
+        action="{% url 'logout' %}"
+    >
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Sair
+        </button>
+
+    </form>
+
+</body>
+
+</html>
