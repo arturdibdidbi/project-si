@@ -40,6 +40,7 @@ INSTALLED_APPS = [
      'cadastro',
      'login',
      'objetivos',
+     'bloqueio'
 ]
 
 MIDDLEWARE = [

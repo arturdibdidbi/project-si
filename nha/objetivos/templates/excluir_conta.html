@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Excluir conta</title>
+</head>
+
+<body>
+
+    <h1>Excluir conta</h1>
+
+    <p>
+        Esta ação é definitiva. Todos os seus objetivos,
+        marcos e tarefas serão excluídos.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Excluir definitivamente
+        </button>
+
+    </form>
+
+    <a href="{% url 'inicio' %}">
+        Cancelar
+    </a>
+
+</body>
+
+</html>

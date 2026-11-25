@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nova subtarefa</title>
+</head>
+
+<body>
+
+    <h1>Nova subtarefa</h1>
+
+    <h2>
+        Tarefa principal: {{ tarefa.titulo }}
+    </h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Criar subtarefa
+        </button>
+
+    </form>
+
+    <a href="{% url 'objetivo' objetivo_id=tarefa.objetivo_id %}">
+        Voltar
+    </a>
+
+</body>
+
+</html>

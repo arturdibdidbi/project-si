@@ -1,0 +1,53 @@
+<h2>Criar regra de bloqueio</h2>
+
+<!-- Seleção do tipo -->
+<form method="GET">
+    <label>Tipo de bloqueio:</label>
+
+    <select name="tipo">
+        <option value="padrao"
+            {% if tipo_selecionado == "padrao" %}selected{% endif %}>
+            Padrão
+        </option>
+
+        <option value="extremo"
+            {% if tipo_selecionado == "extremo" %}selected{% endif %}>
+            Extremo
+        </option>
+    </select>
+
+    <button type="submit">Selecionar tipo</button>
+</form>
+
+<hr>
+
+<!-- Cadastro da regra -->
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.aplicativo.errors }}
+    {{ form.aplicativo.label_tag }}
+    {{ form.aplicativo }}
+
+    <input type="hidden" name="tipo" value="{{ tipo_selecionado }}">
+
+    {% if tipo_selecionado == "extremo" %}
+        <div>
+            {{ form.hora_inicio.label_tag }}
+            {{ form.hora_inicio }}
+            {{ form.hora_inicio.errors }}
+        </div>
+
+        <div>
+            {{ form.hora_fim.label_tag }}
+            {{ form.hora_fim }}
+            {{ form.hora_fim.errors }}
+        </div>
+    {% endif %}
+
+    {{ form.non_field_errors }}
+
+    <button type="submit">Criar bloqueio</button>
+</form>
+
+<a href="{% url 'bloqueio' %}">Voltar</a>

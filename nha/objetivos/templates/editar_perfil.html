@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar perfil</title>
+</head>
+<body>
+
+    <h1>Editar perfil</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Salvar alterações</button>
+    </form>
+
+    <a href="{% url 'inicio' %}">Voltar</a>
+
+</body>
+</html>

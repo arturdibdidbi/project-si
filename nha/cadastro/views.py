@@ -108,27 +108,27 @@ def excluir_conta(request):
 
             if senha_correta:
 
-                # Exclui os objetivos
+                
                 objetivos.delete_many({
                     "usuario_id": usuario_id
                 })
 
-                # Exclui os marcos
+                
                 marcos.delete_many({
                     "usuario_id": usuario_id
                 })
 
-                # Exclui as tarefas
+                
                 tarefas.delete_many({
                     "usuario_id": usuario_id
                 })
 
-                # Exclui o usuário
+                
                 usuarios.delete_one({
                     "_id": usuario_id_obj
                 })
 
-                # Encerra a sessão
+                
                 request.session.flush()
 
                 return redirect("login")
@@ -144,7 +144,7 @@ def excluir_conta(request):
 
     return render(
         request,
-        "cadastro/excluir_conta.html",
+        "excluir_conta.html",
         {
             "form": form
         }

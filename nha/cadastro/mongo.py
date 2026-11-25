@@ -10,4 +10,4 @@ db = client["nha"]
 
 usuarios = db["usuarios"]
 
-usuarios = db["bloqueio_config"]
+bloqueio_config = db["bloqueio_config"]

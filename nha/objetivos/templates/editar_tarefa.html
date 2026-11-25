@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar objetivo</title>
+</head>
+
+<body>
+
+    <h1>Editar objetivo</h1>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Salvar alterações
+        </button>
+
+    </form>
+
+    <a href="{% url 'editar_tarefa' tarefa_id=tarefa.id %}">
+    Editar
+</a>
+
+<a href="{% url 'criar_subtarefa' tarefa_id=tarefa.id %}">
+    Criar subtarefa
+</a>
+
+{% if tarefa.subtarefas %}
+
+    <h4>Subtarefas:</h4>
+
+    {% for subtarefa in tarefa.subtarefas %}
+
+        <p>
+            {{ subtarefa.titulo }}
+
+            {% if subtarefa.concluida %}
+                (Concluída)
+            {% else %}
+                (Pendente)
+            {% endif %}
+        </p>
+
+    {% endfor %}
+
+{% endif %}
+
+    <a href="{% url 'objetivo' objetivo_id=tarefa.objetivo_id %}">
+        Voltar
+    </a>
+
+</body>
+
+</html>

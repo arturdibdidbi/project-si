@@ -1,7 +1,21 @@
-
+@font-face {
+    font-family: roboto;
+    src: url("Roboto_Slab/RobotoSlab-VariableFont_wght.ttf");
+}
 
 body {
-display: flex;    
+display: flex;
+
+background-color:black;    
+color:red;
+font-family: roboto;
+}
+
+.form{
+display: flex;
+flex-direction: column;
+align-items: center;
+border: 1px solid red;
 }
 
 .btn-p { 
@@ -134,11 +148,17 @@ border-radius: 999px;
 left: 170px ;
 width: 80px ;
 height: 80px ;
-    filter:blur(15px);
+    filter:blur(5px);
 
-    opacity:.8;
+    opacity:0.5;
 
     z-index:2;
      transition:all 0.3s ease-in-out;
+}
+
+input {
+border: solid 1px rgb(65, 65, 65);
+border-radius: 5px;
+
 }
 

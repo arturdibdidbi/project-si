@@ -10,7 +10,7 @@
 
     <h1>Criar bloqueio</h1>
 
-    <form method="POST">
+    <form method="POST" action="{% url 'criar_bloqueio' %}">
 
         {% csrf_token %}
 
@@ -23,6 +23,52 @@
     </form>
 
     <a href="{% url 'historico' %}">histórico de bloqueios</a>
+
+    <h1>Meus bloqueios</h1>
+
+{% for regra in regras %}
+
+    <h3>{{ regra.aplicativo }}</h3>
+
+    <p>Tipo: {{ regra.tipo }}</p>
+
+    {% if regra.tipo == "padrao" %}
+
+        {% if regra.ativo %}
+
+            <a href="{% url 'desbloquear' regra.id %}">
+                Desbloquear
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'bloquear' regra.id %}">
+                Bloquear
+            </a>
+
+        {% endif %}
+
+    {% elif regra.tipo == "extremo" %}
+
+        <p>Bloqueio por horário configurado.</p>
+
+        <p>
+            {{ regra.hora_inicio }} até {{ regra.hora_fim }}
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+{% empty %}
+
+    <p>Nenhum bloqueio cadastrado.</p>
+
+{% endfor %}
+
+<a href="{% url 'inicio' %}">
+        Voltar
+    </a>
 
 </body>
 

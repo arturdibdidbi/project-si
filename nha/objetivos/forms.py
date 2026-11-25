@@ -55,3 +55,24 @@ class TarefaForm(forms.Form):
         widget=forms.Textarea,
         label="Descrição"
     )
+
+    prazo = forms.DateField(
+        required=False,
+        input_formats=["%Y-%m-%d"],
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"type": "date"}
+        ),
+        label="Prazo"
+    )
+
+class ExcluirContaForm(forms.Form):
+
+    senha = forms.CharField(
+        label="Senha atual",
+        widget=forms.PasswordInput
+    )
+
+class EditarPerfilForm(forms.Form):
+    nome = forms.CharField(max_length=100, label="Nome")
+    email = forms.EmailField(label="E-mail")

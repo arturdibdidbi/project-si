@@ -8,14 +8,18 @@ from .forms import BloqueioForm
 from cadastro.mongo import bloqueio_config
 
 
+
+
+
+
+
 def bloqueio(request):
     regras = list(bloqueio_config.find())
 
-    return render(
-        request,
-        "bloqueio/bloqueio.html",
-        {"regras": regras}
-    )
+    for regra in regras:
+        regra["id"] = str(regra["_id"])
+
+    return render(request, "bloqueio.html", {"regras": regras})
 
 
 def criar_bloqueio(request):
@@ -30,50 +34,96 @@ def criar_bloqueio(request):
                 "aplicativo": processo,
                 "processo": processo,
                 "tipo": tipo,
-                "ativo": False,
+                "ativo": tipo == "extremo",
                 "bloqueado": False,
             }
 
             if tipo == "extremo":
-                regra["hora_inicio"] = (
-                    form.cleaned_data["hora_inicio"].strftime("%H:%M")
-                )
-                regra["hora_fim"] = (
-                    form.cleaned_data["hora_fim"].strftime("%H:%M")
-                )
+                regra["hora_inicio"] = form.cleaned_data["hora_inicio"].strftime("%H:%M")
+                regra["hora_fim"] = form.cleaned_data["hora_fim"].strftime("%H:%M")
 
             bloqueio_config.insert_one(regra)
-
             return redirect("bloqueio")
 
     else:
-        form = BloqueioForm()
+        tipo = request.GET.get("tipo", "padrao")
+        form = BloqueioForm(initial={"tipo": tipo})
 
-    return render(
-        request,
-        "bloqueio/criar_regra.html",
-        {"form": form}
+    tipo_selecionado = (
+        form.data.get("tipo") if form.is_bound
+        else form.initial.get("tipo", "padrao")
     )
 
+    return render(request, "criar.html", {
+        "form": form,
+        "tipo_selecionado": tipo_selecionado,
+    })
 
 def bloquear(request, id):
-    bloqueio_config.update_one(
-        {"_id": ObjectId(id), "tipo": "padrao"},
-        {"$set": {"bloqueado": True, "ativo": True}}
-    )
+
+    regra = bloqueio_config.find_one({
+        "_id": ObjectId(id),
+        "tipo": "padrao"
+    })
+
+    if regra:
+        bloqueio_config.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {
+                "bloqueado": True,
+                "ativo": True
+            }}
+        )
+        
+
+        registrar_evento(
+            regra["aplicativo"],
+            "Bloqueio ativado"
+        )
 
     return redirect("bloqueio")
 
 
 def desbloquear(request, id):
-    bloqueio_config.update_one(
-        {"_id": ObjectId(id), "tipo": "padrao"},
-        {"$set": {"bloqueado": False, "ativo": False}}
-    )
+
+    regra = bloqueio_config.find_one({
+        "_id": ObjectId(id),
+        "tipo": "padrao"
+    })
+
+    if regra:
+        bloqueio_config.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {
+                "bloqueado": False,
+                "ativo": False
+            }}
+        )
+
+        registrar_evento(
+            regra["aplicativo"],
+            "Bloqueio desativado"
+        )
 
     return redirect("bloqueio")
 
 historico = bloqueio_config.database["bloqueio_historico"]
+
+
+def registrar_evento(aplicativo, acao):
+    historico.insert_one({
+        "aplicativo": aplicativo,
+        "acao": acao,
+        "data_hora": datetime.now()
+
+    })
+
+def registrar_evento(aplicativo, acao):
+    historico.insert_one({
+        "aplicativo": aplicativo,
+        "acao": acao,
+        "data_hora": datetime.now()
+    })
 
 def ver_historico(request):
     eventos = list(
@@ -82,6 +132,6 @@ def ver_historico(request):
 
     return render(
         request,
-        "bloqueio/historico.html",
+        "historico.html",
         {"eventos": eventos}
     )

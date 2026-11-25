@@ -2,6 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.contrib.auth.hashers import check_password
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from datetime import date
+from objetivos.mongo import objetivos, marcos, tarefas
+from cadastro.mongo import usuarios
+from .forms import ExcluirContaForm
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -9,7 +16,8 @@ from bson.errors import InvalidId
 from .forms import (
     ObjetivoForm,
     MarcoForm,
-    TarefaForm
+    TarefaForm,
+    EditarPerfilForm,
 )
 
 from .mongo import (
@@ -34,7 +42,6 @@ def converter_id(valor):
         return None
 
 
-
 def inicio(request):
 
     usuario_id = usuario_logado(request)
@@ -56,7 +63,7 @@ def inicio(request):
 
     return render(
         request,
-        "objetivos/inicio.html",
+        "inicio.html",
         {
             "objetivos": lista_objetivos
         }
@@ -110,7 +117,7 @@ def criar_objetivo(request):
 
     return render(
         request,
-        "objetivos/criar_objetivo.html",
+        "criar_objetivo.html",
         {
             "form": form
         }
@@ -147,44 +154,50 @@ def objetivo(request, objetivo_id):
 
     lista_marcos = list(
         marcos.find({
-            "objetivo_id": str(
-                objetivo_id_obj
-            ),
+            "objetivo_id": str(objetivo_id_obj),
             "usuario_id": usuario_id
         })
     )
 
     lista_tarefas = list(
         tarefas.find({
-            "objetivo_id": str(
-                objetivo_id_obj
-            ),
+            "objetivo_id": str(objetivo_id_obj),
             "usuario_id": usuario_id
         })
     )
 
     for marco in lista_marcos:
-
-        marco["id"] = str(
-            marco["_id"]
-        )
+        marco["id"] = str(marco["_id"])
 
     for tarefa in lista_tarefas:
+        tarefa["id"] = str(tarefa["_id"])
+        prazo = tarefa.get("prazo")
 
-        tarefa["id"] = str(
-            tarefa["_id"]
-        )
+        if prazo and not tarefa.get("concluida"):
+          tarefa["atrasada"] = prazo < date.today()
+        else:
+          tarefa["atrasada"] = False
+
+    tarefas_principais = [
+        tarefa for tarefa in lista_tarefas
+        if not tarefa.get("tarefa_pai_id")
+    ]
+
+    for tarefa in tarefas_principais:
+        tarefa["subtarefas"] = [
+            subtarefa for subtarefa in lista_tarefas
+            if subtarefa.get("tarefa_pai_id") == tarefa["id"]
+        ]
 
     return render(
         request,
-        "objetivos/objetivo.html",
+        "objetivo.html",
         {
             "objetivo": objetivo_data,
             "marcos": lista_marcos,
-            "tarefas": lista_tarefas
+            "tarefas": tarefas_principais
         }
     )
-
 
 
 
@@ -267,7 +280,7 @@ def editar_objetivo(request, objetivo_id):
 
     return render(
         request,
-        "objetivos/editar_objetivo.html",
+        "editar_objetivo.html",
         {
             "form": form,
             "objetivo": objetivo_data
@@ -394,7 +407,7 @@ def criar_marco(request, objetivo_id):
 
     return render(
         request,
-        "objetivos/criar_marco.html",
+        "criar_marco.html",
         {
             "form": form,
             "objetivo": objetivo_data
@@ -551,7 +564,7 @@ def criar_tarefa(request, objetivo_id):
 
     return render(
         request,
-        "objetivos/criar_tarefa.html",
+        "criar_tarefa.html",
         {
             "form": form,
             "objetivo": objetivo_data,
@@ -559,6 +572,78 @@ def criar_tarefa(request, objetivo_id):
         }
     )
 
+def editar_tarefa(request, tarefa_id):
+
+    usuario_id = usuario_logado(request)
+
+    if not usuario_id:
+        return redirect("login")
+
+    tarefa_id_obj = converter_id(tarefa_id)
+
+    if not tarefa_id_obj:
+        return redirect("inicio")
+
+    tarefa = tarefas.find_one({
+        "_id": tarefa_id_obj,
+        "usuario_id": usuario_id
+    })
+
+    if not tarefa:
+        return redirect("inicio")
+
+    if request.method == "POST":
+
+        form = TarefaForm(request.POST)
+
+        if form.is_valid():
+
+            prazo = form.cleaned_data["prazo"]
+
+            tarefas.update_one(
+                {
+                    "_id": tarefa_id_obj,
+                    "usuario_id": usuario_id
+                },
+                {
+                    "$set": {
+                        "titulo": form.cleaned_data["titulo"],
+                        "descricao": form.cleaned_data["descricao"],
+                        "prazo": prazo.isoformat() if prazo else None
+                    }
+                }
+            )
+
+            messages.success(
+                request,
+                "Tarefa atualizada com sucesso!"
+            )
+
+            return redirect(
+                "objetivo",
+                objetivo_id=tarefa["objetivo_id"]
+            )
+
+    else:
+
+        form = TarefaForm(
+            initial={
+                "titulo": tarefa["titulo"],
+                "descricao": tarefa.get("descricao", ""),
+                "prazo": tarefa.get("prazo") or ""
+            }
+        )
+
+    tarefa["id"] = str(tarefa["_id"])
+
+    return render(
+        request,
+        "editar_tarefa.html",
+        {
+            "form": form,
+            "tarefa": tarefa
+        }
+    )
 
 
 @require_POST
@@ -609,6 +694,80 @@ def concluir_tarefa(request, tarefa_id):
     )
 
 
+def criar_subtarefa(request, tarefa_id):
+
+    usuario_id = usuario_logado(request)
+
+    if not usuario_id:
+        return redirect("login")
+
+    tarefa_id_obj = converter_id(tarefa_id)
+
+    if not tarefa_id_obj:
+        return redirect("inicio")
+
+    tarefa_pai = tarefas.find_one({
+        "_id": tarefa_id_obj,
+        "usuario_id": usuario_id
+    })
+
+    if not tarefa_pai:
+        return redirect("inicio")
+
+    if request.method == "POST":
+
+        form = TarefaForm(request.POST)
+
+        if form.is_valid():
+
+            prazo = form.cleaned_data["prazo"]
+
+            tarefas.insert_one({
+
+                "usuario_id": usuario_id,
+
+                "objetivo_id": tarefa_pai["objetivo_id"],
+
+                "tarefa_pai_id": str(tarefa_id_obj),
+
+                "marco_id": tarefa_pai.get("marco_id"),
+
+                "area": tarefa_pai["area"],
+
+                "titulo": form.cleaned_data["titulo"],
+
+                "descricao": form.cleaned_data["descricao"],
+
+                "prazo": prazo.isoformat() if prazo else None,
+
+                "concluida": False,
+
+                "criado_em": timezone.now()
+
+            })
+
+            messages.success(
+                request,
+                "Subtarefa criada com sucesso!"
+            )
+
+            return redirect(
+                "objetivo",
+                objetivo_id=tarefa_pai["objetivo_id"]
+            )
+
+    else:
+
+        form = TarefaForm()
+
+    return render(
+        request,
+        "criar_subtarefa.html",
+        {
+            "form": form,
+            "tarefa": tarefa_pai
+        }
+    )
 
 
 @require_POST
@@ -677,8 +836,133 @@ def graficos(request):
 
     return render(
         request,
-        "objetivos/graficos.html",
+        "graficos.html",
         {
             "pontuacao": pontuacao
         }
     )
+
+def excluir_conta(request):
+
+    usuario_id = request.session.get("usuario_id")
+
+    if not usuario_id:
+        return redirect("login")
+
+    try:
+        usuario_id_obj = ObjectId(usuario_id)
+    except (InvalidId, TypeError):
+        return redirect("login")
+
+    usuario = usuarios.find_one({
+        "_id": usuario_id_obj
+    })
+
+    if not usuario:
+        request.session.flush()
+        return redirect("login")
+
+    if request.method == "POST":
+
+        form = ExcluirContaForm(request.POST)
+
+        if form.is_valid():
+
+            senha = form.cleaned_data["senha"]
+
+            if check_password(
+                senha,
+                usuario["senha"]
+            ):
+
+                objetivos.delete_many({
+                    "usuario_id": usuario_id
+                })
+
+                marcos.delete_many({
+                    "usuario_id": usuario_id
+                })
+
+                tarefas.delete_many({
+                    "usuario_id": usuario_id
+                })
+
+                usuarios.delete_one({
+                    "_id": usuario_id_obj
+                })
+
+                request.session.flush()
+
+                return redirect("login")
+
+            else:
+
+                form.add_error(
+                    "senha",
+                    "Senha incorreta."
+                )
+
+    else:
+
+        form = ExcluirContaForm()
+
+    return render(
+        request,
+        "cadastro/excluir_conta.html",
+        {
+            "form": form
+        }
+    )
+
+def editar_perfil(request):
+    usuario_id = request.session.get("usuario_id")
+
+    if not usuario_id:
+        return redirect("login")
+
+    try:
+        usuario_id_obj = ObjectId(usuario_id)
+    except (InvalidId, TypeError):
+        return redirect("login")
+
+    usuario = usuarios.find_one({"_id": usuario_id_obj})
+
+    if not usuario:
+        request.session.flush()
+        return redirect("login")
+
+    if request.method == "POST":
+        form = EditarPerfilForm(request.POST)
+
+        if form.is_valid():
+            nome = form.cleaned_data["nome"]
+            email = form.cleaned_data["email"]
+
+            email_existente = usuarios.find_one({
+                "email": email,
+                "_id": {"$ne": usuario_id_obj}
+            })
+
+            if email_existente:
+                form.add_error("email", "Este e-mail já está cadastrado.")
+            else:
+                usuarios.update_one(
+                    {"_id": usuario_id_obj},
+                    {"$set": {
+                        "nome": nome,
+                        "email": email
+                    }}
+                )
+
+                messages.success(request, "Perfil atualizado!")
+                return redirect("editar_perfil")
+
+    else:
+        form = EditarPerfilForm(initial={
+            "nome": usuario.get("nome", ""),
+            "email": usuario.get("email", "")
+        })
+
+    return render(request, "cadastro/editar_perfil.html", {
+        "form": form
+    })
