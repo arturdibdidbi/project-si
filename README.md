@@ -33,5 +33,9 @@ organizar seus objetivos, tarefas e atividades, acompanhar seu desenvolvimento e
 | 2 | RF09 | Registro de execução e acompanhamento do progresso |
 | 2 | RF010 | Detecção de padrões de comportamento |
 
+Para funcionar, execute python manage.py runserver no terminal, abra outro terminal e execute python -m bloqueio.menu para rodar o menu de bloqueios
+
+Requisitos para funcionar: pip, pymongo, dotenv, django, psutil, bson, python, datetime.
+Para o banco de dados funcionar, é preciso colar a URI do MongoDB no dotenv.
 
 </div>
